@@ -79,7 +79,9 @@
             svg.append('g')
                .attr("class", "bubble")
                .selectAll("circle")
-               .data(nested)
+               .data(nested.sort(function(a, b){
+                  return b.values['attendance'] - a.values['attendance'];
+               }))
                .enter()
                .append("circle")
                .attr('cx', function(d) { return d.values['x']; })
