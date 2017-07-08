@@ -20,8 +20,8 @@
             .attr('class', 'map');
 
          var projection = d3.geo.mercator()
-                               .scale(150)
-                               .translate( [width / 2, height / 1.5]);
+                               .scale(140)
+                               .translate( [width / 2, height / 1.2]);
 
          var path = d3.geo.path().projection(projection);
 
@@ -36,6 +36,22 @@
 
          function plot_points(data) {
             //draw circles logic
+            var nested = d3.nest()
+                           .key(function(d) {
+                              debugger;
+                              return d['date'].getUTCFullYear();
+                           })
+                           .rollup(function(leaves) {
+                              debugger;
+                               var total = d3.sum(leaves, function(d) {
+                                   return d['attendance'];
+                               });
+
+                               var coords = leaves.map(function(d) {
+                                   return projection([+d.long, +d.lat]);
+                               });
+                           })
+                           .entries(data);
          };
 
          var format = d3.time.format("%d-%m-%Y (%H:%M h)");
