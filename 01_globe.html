@@ -5,7 +5,7 @@
   <script src="http://d3js.org/d3.v3.min.js"></script>
     <style>
     </style>
-    <script type="text/javascript">  
+    <script type="text/javascript">
       function draw(geo_data) {
         "use strict";
         var margin = 75,
@@ -18,6 +18,16 @@
             .attr("height", height + margin)
             .append('g')
             .attr('class', 'map');
+
+         var projection = d3.geo.mercator();
+
+         var path = d3.geo.path().projection(projection);
+
+         var map = svg.selectAll('path')
+                     .data(geo_data.features)
+                     .enter()
+                     .append('path').attr('d', path);
+
       };
       </script>
   </head>
@@ -26,7 +36,7 @@
   /*
     Use D3 to load the GeoJSON file
     */
-    
+
 d3.json("world_countries.json", draw);
   </script>
 </body>
