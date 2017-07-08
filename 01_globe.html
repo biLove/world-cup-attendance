@@ -86,7 +86,11 @@
                .attr('cy', function(d) { return d.values['y']; })
                .attr('r', function(d) {
                     return radius(d.values['attendance']);
-               });
+               })
+               .attr('fill', 'rgb(247, 148, 32)')
+               .attr('stroke', 'black')
+               .attr('stroke-width', 0.7)
+               .attr('opacity', 0.7);
         }
 
         var format = d3.time.format("%d-%m-%Y (%H:%M h)");
