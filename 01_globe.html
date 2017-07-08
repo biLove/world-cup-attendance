@@ -19,13 +19,13 @@
             .append('g')
             .attr('class', 'map');
 
-         var projection = d3.geo.mercator()
+        var projection = d3.geo.mercator()
                                .scale(140)
-                               .translate( [width / 2, height / 1.2]);
+                               .translate([width / 2, height / 1.2]);
 
-         var path = d3.geo.path().projection(projection);
+        var path = d3.geo.path().projection(projection);
 
-         var map = svg.selectAll('path')
+        var map = svg.selectAll('path')
                      .data(geo_data.features)
                      .enter()
                      .append('path')
@@ -34,48 +34,58 @@
                      .style('stroke', 'black')
                      .style('stroke-width', 0.5);
 
-         function plot_points(data) {
+        function plot_points(data) {
             //draw circles logic
+
+            function agg_year(leaves) {
+                var total = d3.sum(leaves, function(d) {
+                    return d['attendance'];
+                });
+
+                var coords = leaves.map(function(d) {
+                    return projection([+d.long, +d.lat]);
+                });
+
+                var center_x = d3.mean(coords, function(d) {
+                    return d[0];
+                });
+
+                var center_y = d3.mean(coords, function(d) {
+                    return d[1];
+                });
+
+                return {
+                  'attendance' : total,
+                  'x' : center_x,
+                  'y' : center_y
+                };
+            }
+
             var nested = d3.nest()
                            .key(function(d) {
-                              debugger;
                               return d['date'].getUTCFullYear();
                            })
-                           .rollup(function(leaves) {
-                              debugger;
-                               var total = d3.sum(leaves, function(d) {
-                                   return d['attendance'];
-                               });
-
-                               var coords = leaves.map(function(d) {
-                                   return projection([+d.long, +d.lat]);
-                               });
-
-                               var center_x = d3.mean(coords, function(d) {
-                                   return d[0];
-                               });
-
-                               var center_y = d3.mean(coords, function(d) {
-                                   return d[1];
-                               });
-
-                               return {
-                                   'attendance' : total,
-                                   'x' : center_x,
-                                   'y' : center_y
-                               };
-                           })
+                           .rollup(agg_year)
                            .entries(data);
-         };
 
-         var format = d3.time.format("%d-%m-%Y (%H:%M h)");
+            svg.append('g')
+               .attr("class", "bubble")
+               .selectAll("circle")
+               .data(nested)
+               .enter()
+               .append("circle")
+               .attr('cx', function(d) { return d.values['x']; })
+               .attr('cy', function(d) { return d.values['y']; })
+               .attr('r', 5);
+        }
 
-         d3.tsv("world_cup_geo.tsv", function(d) {
-             d['attendance'] = +d['attendance'];
-             d['date'] = format.parse(d['date']);
-             return d;
-         }, plot_points);
+        var format = d3.time.format("%d-%m-%Y (%H:%M h)");
 
+        d3.tsv("world_cup_geo.tsv", function(d) {
+          d['attendance'] = +d['attendance'];
+          d['date'] = format.parse(d['date']);
+          return d;
+        }, plot_points);
       };
       </script>
   </head>
