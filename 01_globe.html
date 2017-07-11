@@ -10,6 +10,10 @@
         stroke-width: 0.7;
         opacity: 0.7;
       }
+      h2 {
+        text-align: center;
+        color: black;
+      }
     </style>
     <script type="text/javascript">  
       function draw(geo_data) {
@@ -17,6 +21,10 @@
         var margin = 75,
             width = 1400 - margin,
             height = 600 - margin;
+
+        d3.select("body")
+          .append("h2")
+          .text("World Cup ");
 
         var svg = d3.select("body")
             .append("svg")
@@ -112,6 +120,9 @@
               var filtered = nested.filter(function(d) {
                   return new Date(d['key']).getUTCFullYear() === year;
               });
+
+              d3.select('h2')
+              .text("World Cup " + year);
 
               var circles = svg.selectAll('circle')
                                .data(filtered, key_func);
