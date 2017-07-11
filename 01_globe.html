@@ -128,14 +128,22 @@
                         return radius(d.values['attendance']);
                      });
 
+              var countries = filtered[0].values['teams'];
 
+              function update_countries(d) {
+                  if(countries.indexOf(d.properties.name) !== -1) {
+                      return "lightBlue";
+                  } else {
+                      return 'white';
+                  }
+              }
 
-
-
+              svg.selectAll('path')
+                 .style('fill', update_countries)
+                 .style('stroke', update_countries);
 
           }
-          
-          update(1930);
+          debugger;
 
       }
 
