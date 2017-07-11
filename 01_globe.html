@@ -121,8 +121,8 @@
                   return new Date(d['key']).getUTCFullYear() === year;
               });
 
-              d3.select('h2')
-              .text("World Cup " + year);
+              d3.select("h2")
+                .text("World Cup " + year);
 
               var circles = svg.selectAll('circle')
                                .data(filtered, key_func);
@@ -131,6 +131,8 @@
 
               circles.enter()
                      .append("circle")
+                     .transition()
+                     .duration(500)
                      .attr('cx', function(d) { return d.values['x']; })
                      .attr('cy', function(d) { return d.values['y']; })
                      .attr('r', function(d) {
@@ -148,6 +150,8 @@
               }
 
               svg.selectAll('path')
+                 .transition()
+                 .duration(500)
                  .style('fill', update_countries)
                  .style('stroke', update_countries);
 
