@@ -51,18 +51,7 @@
             if(i !== 1942 && i !== 1946) {
               years.push(i);
             };
-          }    
-
-        var buttons = d3.select("body")
-                        .append("div")
-                        .attr("class", "years_buttons")
-                        .selectAll("div")
-                        .data(years)
-                        .enter()
-                        .append("div")
-                        .text(function(d) {
-                            return d;
-                        });
+          } 
 
         var projection = d3.geo.mercator()
                                .scale(140)
@@ -80,7 +69,6 @@
                      .style('stroke-width', 0.5);
 
         function plot_points(data) {
-            //draw circles logic
             
             function agg_year(leaves) {
                 var total = d3.sum(leaves, function(d) {
@@ -197,6 +185,26 @@
 
             if(year_idx >= years.length) {
                 clearInterval(year_interval);
+
+                var buttons = d3.select("body")
+                        .append("div")
+                        .attr("class", "years_buttons")
+                        .selectAll("div")
+                        .data(years)
+                        .enter()
+                        .append("div")
+                        .text(function(d) {
+                            return d;
+                        });
+
+                buttons.on("click", function(d) {
+                    d3.select(this)
+                      .transition()
+                      .duration(500)
+                      .style("background", "lightBlue")
+                      .style("color", "white");
+                    update(d);
+                });
             }
           }, 1000);
 
