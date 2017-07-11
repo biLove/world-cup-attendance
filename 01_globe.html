@@ -112,8 +112,6 @@
               var filtered = nested.filter(function(d) {
                   return new Date(d['key']).getUTCFullYear() === year;
               });
-              
-              debugger;
 
               var circles = svg.selectAll('circle')
                                .data(filtered, key_func);
@@ -143,7 +141,26 @@
                  .style('stroke', update_countries);
 
           }
-          debugger;
+          
+          var years = [];
+
+          for(var i = 1930; i < 2015; i += 4) {
+            if(i !== 1942 && i !== 1946) {
+              years.push(i);
+            };
+          }
+
+          var year_idx = 0;
+
+          var year_interval = setInterval(function() {
+            update(years[year_idx]);
+
+            year_idx++;
+
+            if(year_idx >= years.length) {
+                clearInterval(year_interval);
+            }
+          }, 1000);
 
       }
 
