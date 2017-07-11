@@ -14,6 +14,18 @@
         text-align: center;
         color: black;
       }
+
+      div.years_buttons {
+        position: fixed;
+        top: 5px;
+        left: 50px;
+      }
+
+      div.years_buttons div {
+        background-color: rgb(251, 201, 127);
+        padding: 3px;
+        margin: 7px;
+      }
     </style>
     <script type="text/javascript">  
       function draw(geo_data) {
@@ -32,6 +44,25 @@
             .attr("height", height + margin)
             .append('g')
             .attr('class', 'map');
+
+        var years = [];
+
+          for(var i = 1930; i < 2015; i += 4) {
+            if(i !== 1942 && i !== 1946) {
+              years.push(i);
+            };
+          }    
+
+        var buttons = d3.select("body")
+                        .append("div")
+                        .attr("class", "years_buttons")
+                        .selectAll("div")
+                        .data(years)
+                        .enter()
+                        .append("div")
+                        .text(function(d) {
+                            return d;
+                        });
 
         var projection = d3.geo.mercator()
                                .scale(140)
@@ -155,14 +186,6 @@
                  .style('fill', update_countries)
                  .style('stroke', update_countries);
 
-          }
-          
-          var years = [];
-
-          for(var i = 1930; i < 2015; i += 4) {
-            if(i !== 1942 && i !== 1946) {
-              years.push(i);
-            };
           }
 
           var year_idx = 0;
