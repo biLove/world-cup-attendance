@@ -4,8 +4,14 @@
   <meta charset="utf-8">
   <script src="http://d3js.org/d3.v3.min.js"></script>
     <style>
+      circle {
+        fill: orange;
+        stroke: black;
+        stroke-width: 0.7;
+        opacity: 0.7;
+      }
     </style>
-    <script type="text/javascript">
+    <script type="text/javascript">  
       function draw(geo_data) {
         "use strict";
         var margin = 75,
@@ -36,7 +42,7 @@
 
         function plot_points(data) {
             //draw circles logic
-
+            
             function agg_year(leaves) {
                 var total = d3.sum(leaves, function(d) {
                     return d['attendance'];
@@ -54,10 +60,18 @@
                     return d[1];
                 });
 
+                var teams = d3.set();
+
+                leaves.forEach(function(d) {
+                    teams.add(d['team1']);
+                    teams.add(d['team2']);
+                });
+
                 return {
                   'attendance' : total,
                   'x' : center_x,
-                  'y' : center_y
+                  'y' : center_y,
+                  'teams' : teams.values()
                 };
             }
 
@@ -74,14 +88,18 @@
 
             var radius = d3.scale.sqrt()
                            .domain([0, attendance_max])
-                           .range([0, 12]);
+                           .range([0, 15]);
+
+            function key_func(d) {
+                return d['key'];
+            }
 
             svg.append('g')
                .attr("class", "bubble")
                .selectAll("circle")
-               .data(nested.sort(function(a, b){
+               .data(nested.sort(function(a, b) { 
                   return b.values['attendance'] - a.values['attendance'];
-               }))
+               }), key_func)
                .enter()
                .append("circle")
                .attr('cx', function(d) { return d.values['x']; })
@@ -89,28 +107,54 @@
                .attr('r', function(d) {
                     return radius(d.values['attendance']);
                })
-               .attr('fill', 'rgb(247, 148, 32)')
-               .attr('stroke', 'black')
-               .attr('stroke-width', 0.7)
-               .attr('opacity', 0.7);
-        }
 
-        var format = d3.time.format("%d-%m-%Y (%H:%M h)");
+          function update(year) {
+              var filtered = nested.filter(function(d) {
+                  return new Date(d['key']).getUTCFullYear() === year;
+              });
+              
+              debugger;
 
-        d3.tsv("world_cup_geo.tsv", function(d) {
-          d['attendance'] = +d['attendance'];
-          d['date'] = format.parse(d['date']);
-          return d;
-        }, plot_points);
-      };
-      </script>
+              var circles = svg.selectAll('circle')
+                               .data(filtered, key_func);
+
+              circles.exit().remove();
+
+              circles.enter()
+                     .append("circle")
+                     .attr('cx', function(d) { return d.values['x']; })
+                     .attr('cy', function(d) { return d.values['y']; })
+                     .attr('r', function(d) {
+                        return radius(d.values['attendance']);
+                     });
+
+
+
+
+
+
+          }
+          
+          update(1930);
+
+      }
+
+      var format = d3.time.format("%d-%m-%Y (%H:%M h)");
+
+      d3.tsv("world_cup_geo.tsv", function(d) {
+        d['attendance'] = +d['attendance'];
+        d['date'] = format.parse(d['date']);
+        return d;
+      }, plot_points);
+    };
+    </script>
   </head>
 <body>
   <script type="text/javascript">
   /*
     Use D3 to load the GeoJSON file
     */
-
+    
 d3.json("world_countries.json", draw);
   </script>
 </body>
