@@ -198,6 +198,13 @@
                         });
 
                 buttons.on("click", function(d) {
+                    d3.select(".years_buttons")
+                      .selectAll("div")
+                      .transition()
+                      .duration(500)
+                      .style("color", "black")
+                      .style("background", "rgb(251, 201, 127)");
+                      
                     d3.select(this)
                       .transition()
                       .duration(500)
